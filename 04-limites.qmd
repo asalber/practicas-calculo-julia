@@ -55,13 +55,13 @@ a.  Dibujar la gráfica de los valores de $f$ evaluados en los apartados anterio
 
     :::{.callout-tip collapse="true"}
     ## Solución
-```{julia}
-using Plots
-xd = [a+1/(10i) for i=1:10]
-Plots.scatter(xd, f.(xd), label="Aproximación por la derecha")
-xi = [a-1/(10i) for i=1:10]
-Plots.scatter!(xi, f.(xi), label="Aproximación por la izquierda", legend=:topleft)
-```
+    ```{julia}
+    using Plots
+    xd = [a+1/(10i) for i=1:10]
+    Plots.scatter(xd, f.(xd), label="Aproximación por la derecha")
+    xi = [a-1/(10i) for i=1:10]
+    Plots.scatter!(xi, f.(xi), label="Aproximación por la izquierda", legend=:topleft)
+    ```
     :::
 
 a.  Calcular el límite por la izquierda y por la derecha de $f$ en $x=3$.
