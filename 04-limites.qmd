@@ -31,7 +31,7 @@ a.  Estudiar la tendencia de $f$ cuando $x$ se aproxima a $3$ por la derecha, ev
     ```{julia}
     f(x) = x^2
     a = 3
-    print([f(a+1/10i) for i = 1:10])
+    print([f(a+1/(10i)) for i = 1:10])
     ```
     La función tiende a $9$.
     :::
@@ -41,7 +41,7 @@ a.  Estudiar la tendencia de $f$ cuando $x$ se aproxima a $3$ por la izquierda, 
     :::{.callout-tip collapse="true"}
     ## Solución
     ```{julia}
-    print([f(a-1/10i) for i = 1:10])
+    print([f(a-1/(10i)) for i = 1:10])
     ```
     La función también tiende a 9.
     :::
@@ -50,17 +50,18 @@ a.  Dibujar la gráfica de los valores de $f$ evaluados en los apartados anterio
 
     :::{.callout-note collapse="true"}
     ## Ayuda
-    Definir un vector con los valores de $x$ y otro con los valores correspondientes de $f(x)$ y usar la función [`scatter`](https://docs.juliaplots.org/latest/api/#Plots.scatter-Tuple) del paquete `Plots`, pasandole los dos vectores.
+    Definir un vector con los valores de $x$ y otro con los valores correspondientes de $f(x)$ y usar la función [`scatter`](https://docs.juliaplots.org/latest/api/#Plots.scatter-Tuple) del paquete `Plots`, pasándole los dos vectores.
     :::
 
     :::{.callout-tip collapse="true"}
     ## Solución
-    ```{julia}
-    xd = [a+1/10i for i=1:10]
-    scatter(xd, f.(xd), label="Aproximación por la derecha")
-    xi = [a-1/10i for i=1:10]
-    scatter!(xi, f.(xi), label="Aproximación por la izquierda", legend=:topleft)
-    ```
+```{julia}
+using Plots
+xd = [a+1/(10i) for i=1:10]
+Plots.scatter(xd, f.(xd), label="Aproximación por la derecha")
+xi = [a-1/(10i) for i=1:10]
+Plots.scatter!(xi, f.(xi), label="Aproximación por la izquierda", legend=:topleft)
+```
     :::
 
 a.  Calcular el límite por la izquierda y por la derecha de $f$ en $x=3$.
@@ -146,7 +147,7 @@ a.  Dibujar su gráfica, y a la vista de misma conjeturar el resultado de los si
     ```{julia}
     using Plots
     f(x) = (1+2/x)^(x/2)
-    plot(f, xlims=(-10,10), ylims=(0,6))
+    Plots.plot(f, xlims=(-10,10), ylims=(0,6))
     ```
 
     A la vista de la gráfica, se puede concluir que 
@@ -240,6 +241,7 @@ a.  $f(x)=\frac{\operatorname{sen}(x)}{x}$ en $x=0$.
     Ahora calculamos el límite de $f$ en $0$.
 
     ```{julia}
+    using SymPy
     @syms x::real
     f(x)=sin(x)/x
     limit(f(x), x=>0)
@@ -263,7 +265,12 @@ a.  $g(x)=\frac{\cos(x)}{x-\pi/2}$ en $x=\pi/2$.
     g(x)=cos(x)/(x-pi/2)
     g(pi/2)
     ```
-    Como se puede observar, se obtiene $\infty$ en lugar de indeterminado. La razón está en la representación de los números reales mediante números con coma flotante, de manera que $\pi/2$ se redondea al número de coma flotante más próximo, y al aplicar el coseno se obtiene un número muy próximo a $0$ pero distinto de $0$.
+    Como se puede observar, se obtiene $\infty$ en lugar de indeterminado. La razón está en la representación de los números reales mediante números con coma flotante, de manera que $\pi/2$ se redondea al número de coma flotante más próximo, y al aplicar el coseno se obtiene un número muy próximo a $0$ pero distinto de $0$. En estos casos conviene trabajar con la constante $\pi$ en modo simbólico para evitar la conversión a número en coma flotante. Para ello se puede usar la constante `PI` predefinida en el paquete `SymPy`.
+
+    ```{julia}
+    g(x)=cos(x)/(x-PI/2)
+    g(PI/2)
+    ```
 
     Ahora calculamos el límite de $g$ en $\pi/2$.
 
@@ -278,11 +285,10 @@ a.  $g(x)=\frac{\cos(x)}{x-\pi/2}$ en $x=\pi/2$.
     plot(g)
     ```
     
-    Como se puede apreciar gráficamente la tendencia de $g$ en $\pi/2$ es $-1$ y no el valor obtenido con el cálculo del límite. De nuevo el problema está en la aproximación de $pi$ como un real en coma flotante. Afortunadamente el paquete `SymPy` permite definir una constante como simbólica para evitar su conversión a número en coma flotante, usando la función `Sym()`. También podemos usar la constante simbólica predefinida `Pi`. Repetimos la definición de la función y el cálculo de nuevo convirtiendo $\pi$ en una constante simbólica.
+    Como se puede apreciar gráficamente la tendencia de $g$ en $\pi/2$ es $-1$ y no el valor obtenido con el cálculo del límite. De nuevo el problema está en la aproximación de $pi$ como un real en coma flotante. 
 
     ```{julia}
-    g(x)=cos(x)/(x-Sym(pi)/2)
-    limit(g(x), x=>Sym(pi)/2)
+    limit(g(x), x=>PI/2)
     ```
     :::
 :::
@@ -322,15 +328,19 @@ a.  Calcular las asíntotas verticales de $g$ y dibujarlas.
     :::{.callout-tip collapse="true"}
     ## Solución
     Estudiamos primero el dominio para ver dónde no está definida la función. Como tanto la rama negativa como la positiva son funciones racionales, hay que ver los puntos que anulan el denominador.
+
     ```{julia}
     println("Puntos fuera del dominio de la rama negativa: ", solve(x-2))
     println("Puntos fuera del dominio de la rama positiva: ", solve(2x-6))
     ```
+    
     Así pues la rama negativa está definida en todos $\mathbb{R}^-$ y la rama positiva en $\mathbb{R}^+\setminus\{3\}$. Es en este último punto donde $g$ puede tener asíntota vertical, así que estudiamos los límites laterales.
+    
     ```{julia}
     println("Límte en 3 por la izquierda: ", limit(g(x), x=>3, dir="-"))
     println("Límte en 3 por la derecha: ", limit(g(x), x=>3, dir="+"))
     ```
+    
     Por tanto, $g$ tiene una asíntota vertical en $x=3$.
 
     ```{julia}
@@ -343,10 +353,12 @@ a.  Calcular las asíntotas horizontales de $g$.
     :::{.callout-tip collapse="true"}
     ## Solución
     Estudiamos los límites en el infinito.
+    
     ```{julia}
     println("Límite en -∞: ", limit(g1(x), x=>-oo))
     println("Límite en ∞: ", limit(g2(x), x=>oo))
     ```
+    
     Por tanto, $g$ tiene una asíntota horizontal $y=1$ en $-\infty$.
 
     ```{julia}
@@ -359,13 +371,17 @@ a.  Calcular las asíntotas oblicuas de $g$.
     :::{.callout-tip collapse="true"}
     ## Solución
     Estudiamos el límite en $\infty$ de $\frac{f(x)}{x}$ (en $-\infty$ no puede haber asíntota oblicua al haber asíntota horizontal).
+    
     ```{julia}
     limit(g2(x)/x, x=>oo)
     ```
+    
     Por tanto, $g$ tiene una asíntota oblicua con pendiente $b=1/2$ en $\infty$. Para obtener el término independiente de la asíntota calculamos el límite en $\infty$ de $f(x)-\frac{1}{2}x$.
+    
     ```{julia}
     limit(g2(x)-x/2, x=>oo)
     ```
+    
     Por tanto, $g$ tiene una asíntota oblicua $y=\frac{3}{2}+\frac{1}{2}x$.
 
     ```{julia}

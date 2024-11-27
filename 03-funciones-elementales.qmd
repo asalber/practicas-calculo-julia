@@ -265,8 +265,7 @@ a.  Si empezamos a introducir helio en el globo de manera que su volumen a los $
 
     ## Plots
     ```{julia}
-    using Plots, SymPy
-    @syms t
+    using Plots
     vol(t)=t^2+2t
     Plots.plot(rad2∘vol, xlim = (0,10), xlab = "Tiempo (min)", ylab = "Radio (m)", legend = false)
     ```
@@ -278,6 +277,7 @@ a.  Si el globo explota cuando el radio alcanza los 3 m, ¿cuándo explotará el
     :::{.callout-tip collapse="true"}
     ## Solución
     ```{julia}
+    @syms t
     sol = solve((rad∘vol)(t)-3)
     ```
 
