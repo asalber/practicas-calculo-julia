@@ -397,11 +397,11 @@ $$
 h(x)=
 \begin{cases}
 \frac{2x^2-2x}{3x^2+x} & \mbox{si } x\leq 0,\\
-\frac{\operatorname{tg}(x)+a}{x} & \mbox{si } x>0
+\frac{\operatorname{tg}(x)-ax}{x} & \mbox{si } x>0
 \end{cases}
 $$
 
-¿Qué valor debe tomar $a$ para que la función sea continua en todo su dominio?
+¿Qué valor debe tomar $a$ para que la función sea continua en $x=0$?
 
 :::{.callout-note collapse="true"}
 ## Ayuda
@@ -415,14 +415,13 @@ Calcular el límite en $0$ por la izquierda de la función de la rama negativa, 
 h1(x) = (2x^2-2x)/(3x^2+x)
 h2(x) = (tan(x)-a*x)/x 
 l1 = limit(h1(x), x=>0, dir="-")
-l2 = limit(h2(x),x=>0, dir="+")
+l2 = limit(h2(x), x=>0, dir="+")
 solve(Eq(l1,l2))
 ```
 :::
 :::
 
 :::{#exr-discontinuidad}
-
 Representar gráficamente y clasificar las discontinuidades de la función
 
 $$
