@@ -19,7 +19,9 @@ Calcular el volumen de las siguientes figuras geométricas usando integrales mú
 
 :::{.callout-note collapse="true"}
 ## Ayuda
-Para calcular numéricamente integrales definidas de funciones de varias variables usar la función [`hcubature`](https://juliapackages.com/p/hcubature) del paquete `HCubature`.
+Para calcular numéricamente integrales definidas de funciones de varias variables usar la función [`hcubature`](https://juliapackages.com/p/hcubature) del paquete `HCubature`. 
+
+Este paquete toma como argumento una función vectorizada. Para crear una función vectorizada a partir de una función escalar se puede usar `f(v) = f(v...)`.
 :::
 
 a.  Un paralelogramo de base rectangular $[0,1]\times [0,5]$ y altura $10$.
@@ -199,9 +201,14 @@ a.  $x + 2y + 3z = 6$ en el primer octante.
     ```{julia}
     using SymPy
     @syms x y z
+    # Despejamos z y la expresamos en función de x e y.
     f(x, y) = solve(x+2y+3z-6, z)[1]
-    g(x) = solve(f(x,y), y)
-    integrate(f(x,y), (y, 0, g(x)), (x, 0, 6))
+    # Obtenemos los límites de integración en y.
+    g(x) = solve(f(x,y), y)[1]
+    # Obtenemos los límites de integración en x.
+    b = solve(g(x))[1]
+    # Calculamos la integral doble.
+    integrate(f(x,y), (y, 0, g(x)), (x, 0, b))
     ```
     :::
 
@@ -209,6 +216,15 @@ a.  $f(x,y) = xy$ en $[-1,1]\times [-1,1]$.
 
     :::{.callout-tip collapse="true"}
     ## Solución
+    En este caso la integral doble no nos da el volumne, porque hay subintervalos donde la función es negativa. Para ello debemos descomponer la región en subregiones donde la función siempre tenga el mismo signo y sumar los volúmenes de cada una de ellas.
+
+    ```{julia}
+    f(x, y) = x*y  
+    integrate(f(x,y), (y, -1, 0), (x, -1, 0)) + integrate(-f(x,y), (y, -1, 0), (x, 0, 1)) + integrate(-f(x,y), (y, 0, 1), (x, -1, 0)) + integrate(f(x,y), (y, 0, 1), (x, 0, 1))
+    ```
+
+    En este caso resulta más sencillo utilizar la función `hcubature` del paquete `HCubature`.
+
     ```{julia}
     using HCubature
     f(x, y) = abs(x*y)
@@ -249,8 +265,12 @@ using SymPy
 @syms x y
 f(x, y) = x^2 + y^2
 g(x, y) = 2x
-sol = solve(f(x,y)-g(x,y), y)
-integrate(g(x,y)-f(x,y), (y, sol[1], sol[2]), (x, 0, 2))
+# Límites de integración en y
+soly = solve(f(x,y)-g(x,y), y)
+# Límites de integración en x
+solx = solve(soly[1])
+# Calculamos el volumen
+integrate(g(x,y)-f(x,y), (y, soly[2], soly[1]), (x, solx[1], solx[2]))
 ```
 :::
 :::
@@ -275,7 +295,9 @@ Para calcular el volumen es más sencillo trabajar en coordenadas polares.
 using SymPy
 @syms x y r θ
 f(x, y) = 2*sqrt(x^2+y^2)
+# Función en coordenadas polares
 g(r, θ) = f(r*cos(θ), r*sin(θ))
+# Límites de integración en r
 solr = solve(g(r,θ)-4, r)
 integrate(4 - g(r,θ)*r, (r, 0, solr[2]), (θ, 0, 2PI))
 ```
@@ -283,7 +305,9 @@ integrate(4 - g(r,θ)*r, (r, 0, solr[2]), (θ, 0, 2PI))
 Para calcular en área de la superficie trabajamos en coordenadas rectangulares.
 
 ```{julia}
+# Límites de integración en y
 soly = solve(f(x,y)-4, y)
+# Límites de integración en x
 solx = solve(f(x,0)-4)
 integrate(sqrt(diff(f(x,y), x)^2 + diff(f(x,y), y)^2 +1), (y, soly[1], soly[2]), (x, solx[1], solx[2]))
 ```
@@ -312,6 +336,7 @@ a.  Calcular la masa de la placa.
     d(x,y) = x^2 * y^2
     g(x) = 2 - x^2
     h(x) = -3 + 2x^2
+    # Límites de integración en x
     sol = solve(g(x)-h(x), x)
     m = integrate(d(x,y), (y, h(x), g(x)), (x, sol[1], sol[2]))
     ```

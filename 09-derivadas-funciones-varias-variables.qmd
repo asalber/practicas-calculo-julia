@@ -759,17 +759,17 @@ a.  ¿En qué dirección debe cambiarse la temperatura y las concentraciones de 
     ex = diff.(f(x, y, z), [x, y, z])
     ∇f = lambdify(ex, (x, y, z))
     sol = ∇f(40, 0.4, 0.5)
-    fillblankq("Dirección de cambio de la temperatura: ____" , sol[1])
+    numericq(sol[1], 1e-5, label = "Dirección de cambio de la temperatura: ")
     ```
 
     ```{julia}
     #| echo: false
-    fillblankq("Dirección de cambio del acetato de etilo: ____" , sol[2])
+    numericq(sol[2], 1e-5, label = "Dirección de cambio del acetato de etilo: ")
     ```
 
     ```{julia}
     #| echo: false
-    fillblankq("Dirección de cambio del hidróxido de sodio: ____" , sol[3])
+    numericq(sol[3], 1e-5, label = "Dirección de cambio del hidróxido de sodio: ")
     ```
 
 a.  ¿Cómo cambiará la velocidad de reacción en ese instante si la temperatura disminuye al mismo ritmo que aumenta la concentración del acetato de etilo y la concentración de acetato de etilo aumenta la mitad de lo que aumenta la concentración del hidróxido de sodio?

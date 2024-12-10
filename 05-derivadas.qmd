@@ -437,15 +437,14 @@ a.  Calcular la tasa de variación de $y$ con respecto a $x$ en el punto $(1,1)$
     :::{.callout-tip collapse="true"}
     ## Solución
     ```{julia}
-    # Declaramos una función simbólica
+    # Declaramos una función simbólica.
     @syms u()
-    # Reemplazamos y por una función simbólica u(x).
-    ex1 = subs(f(x,y), y=>u(x))
-    # Calculamos la derivada de ambos lados de la ecuación y la resolvemos para la derivada de u'(x).
-    du = solve(diff(ex1, x), diff(u(x), x))[1]
+    # Reemplazamos y por una función implícita u(x) y calculamos la derivada implícitamente.
+    df = diff(f(x, u(x)))
+    # Resolvemos la ecuación para la derivada de u(x).
+    du = solve(df, diff(u(x)))[1]
     # Deshacemos el cambio y = u(x).
-    dy = subs(du, u(x) => y)
-    println("y'=", dy)
+    dy = du(u(x) => y)
     ```
     :::
 
@@ -455,7 +454,7 @@ a.  Dibujar la recta tangente a la curva anterior en el punto $(1,1)$.
     ## Solución
     ```{julia}
     using Latexify
-    # Definimos la funciónd de la recta tangente
+    # Definimos la función de la recta tangente
     tg = 1 + dy(1,1) * (x-1)
     Plots.plot!(tg, label="Tangente "*L"y="*latexify(tg))
     # Dibujamos el punto (1,1)
@@ -465,7 +464,7 @@ a.  Dibujar la recta tangente a la curva anterior en el punto $(1,1)$.
 :::
 
 :::{#exr-taylor-1}
-Crear una función para calcular el polinomio de Taylor de grado $n$ una función $f$ en un punto $a$ y utilizarla para dibujar los polinomios de Taylor de la función $f(x)=\operatorname{sen}(x)$ en $a=0$ hasta el grado $5$.
+Crear una función para calcular el polinomio de Taylor de grado $n$ una función $f$ en un punto $a$ y utilizarla para dibujar los polinomios de Taylor de la función $f(x)=\operatorname{sen}(x)$ en $a=0$ hasta el grado $5$. Calcular y dibujar el error cometido al aproximar $\operatorname{sen}(\pi/6)$ mediante los polinomios de Taylor hasta el grado $1$ a $9$.
 
 :::{.callout-note collapse="true"}
 ## Ayuda
@@ -495,6 +494,23 @@ for i in 1:5
 end 
 plt
 ```
+
+Calculamos ahora los errores cometidos al aproximar $\operatorname{sen}(\pi/6)$ mediante los polinomios de Taylor hasta el grado $1$ a $9$.
+
+```{julia}
+errores = []
+for i in 1:9
+    pol = taylor(f(x), 0, i)
+    push!(errores, abs(sin(pi/6)-pol(pi/6)))
+end
+errores
+```
+
+Finalmente, dibujamos los errores cometidos.
+
+```{julia}
+Plots.scatter(1:9, errores, xlab="Grado", ylab="Error", legend=false)
+```
 :::
 :::
 
@@ -518,7 +534,7 @@ a.  $f(x)=\cos(x)$ en $x=\pi/2$.
     using SymPy
     @syms x::real
     f(x) = cos(x)
-    SymPy.series(f(x), x, Sym(pi)/2, 11)
+    SymPy.series(f(x), x, PI/2, 11)
     ```
     :::
 
@@ -528,7 +544,7 @@ a.  $g(x)=\ln(x)$ en $x=1$
     ## Solución
     ```{julia}
     g(x) = log(x)
-    SymPy.series(g(x), x, 1, 10)
+    SymPy.series(g(x), x, 1, 11)
     ```
     :::
 
@@ -538,7 +554,7 @@ a.  $g(x)=\ln(x)$ en $x=1$
     ## Solución
     ```{julia}
     h(x) = exp(sin(x))
-    SymPy.series(h(x), x, 0, 10)
+    SymPy.series(h(x), x, 0, 11)
     ```
     :::
 :::
