@@ -425,10 +425,10 @@ Calcular el volumen encerrado por la superficie de la función $f(x,y)=\ln(\cos(
 ```{julia}
 #| echo: false
 using HCubature
-f(x, y) = x^2+y^2 <= 1 ? log(cos(x*y)+2) : 0
+f(x, y) = x^2+y^2 <= 1 ? log(cos(x+y)+2) : 0
 f(v) = f(v...)
-#sol = hcubature(f, [-1,-1], [1, 1])
-numericq(3.42958314, 1e-5, hint="Introducir hasta 5 decimales")
+sol = hcubature(f, [-1,-1], [1, 1], rtol = 1e-6) 
+numericq(sol[1], 1e-5, hint="Introducir hasta 5 decimales")
 ```
 :::
 
